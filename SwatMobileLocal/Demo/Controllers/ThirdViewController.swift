@@ -107,6 +107,8 @@ extension String{
             offSet+=1
         }
         newStr = newStr.replacingOccurrences(of: ";", with: " ")
+        newStr = newStr.replacingOccurrences(of: "/blockquote", with: "")
+        newStr = newStr.replacingOccurrences(of: "blockquote", with: "")
         return newStr
     }
 }

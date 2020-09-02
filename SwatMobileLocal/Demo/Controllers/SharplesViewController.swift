@@ -17,14 +17,19 @@ class SharplesViewController: UIViewController {
     
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var prevButton: UIButton!
+    //activity spinner for when jason parser is activated
+    @IBOutlet weak var activitySpinner: UIActivityIndicatorView!
+    //reserve button outlet
+    @IBOutlet weak var reserveButton: UIButton!
     
-    var sharplesData: sharplesDayData = sharplesDayData(calData: [dayFormatter(selected_date: Date()):dayMeals(events: [meals(title: "Loading", body: "...")])])
+    var sharplesData: sharplesDayData = sharplesDayData(calData: [dayFormatter(selected_date: Date()):dayMeals(events: [])])
+    //meals(title: "", body: "")
     
     var jsonFlag: Bool = false
     var day: Date = Date()
-    //forward and backward vars to avoid accessing sharples data that does not exist
-    var forward: Int = 0
-    var backward: Int = 0
+//    forward and backward vars to avoid accessing sharples data that does not exist
+//    var forward: Int = 0
+//    var backward: Int = 0
     
     //variables to construct message for shareSharplesController
     var message: String = ""
@@ -69,10 +74,9 @@ class SharplesViewController: UIViewController {
         
         super.viewDidLoad()
         
-        
         //creating date picker to be in the text field
         createDatePickerSharples()
-
+        
         // Do any additional setup after loading the view.
         SharplesTable.delegate = self
         SharplesTable.dataSource = self
@@ -83,20 +87,27 @@ class SharplesViewController: UIViewController {
         navigationItem.titleView?.layer.cornerRadius = 15
         navigationItem.titleView?.layer.masksToBounds = true
         
-        //button config
+        //button config, making their edges round
         nextButton.layer.cornerRadius = 15
         nextButton.layer.masksToBounds = true
         prevButton.layer.cornerRadius = 15
         prevButton.layer.masksToBounds = true
-        
+        reserveButton.layer.cornerRadius = 15
+        reserveButton.layer.masksToBounds = true
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        activitySpinner.startAnimating()
         //parsing and loading sharples json information
         parseSharplesJSON()
         while !jsonFlag{
         //keep looping until the json parser is finished
         //we know the parser is finished once the default values of sharplesData have been updated and the jsonFlag variable has been set to true, which is what the while statement condition verifies
         }
-
+        SharplesTable.reloadData()
+        activitySpinner.stopAnimating()
     }
+    
     //creating the alert that will pop up to confirm wether the user wants to invite a friend to a given meal at sharples
     func createAlert(title:String, message:String){
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
@@ -108,7 +119,7 @@ class SharplesViewController: UIViewController {
                 let messageVC = MFMessageComposeViewController()
                        
                 messageVC.body = self.message
-                messageVC.recipients = ["Swattie"]
+                messageVC.recipients = ["Jim Bock"]
                 messageVC.messageComposeDelegate = self
                        
                 self.present(messageVC, animated: true, completion: nil)
@@ -129,14 +140,14 @@ class SharplesViewController: UIViewController {
     
     //action performed when next button is pressed
     @IBAction func nextButtonPressed(_ sender: Any) {
-        
-        if self.forward<10{
-            self.day = addToDate(selected_date: day, days_to_add: 1)
-            self.dateDisplay.text = dateDisplayFormatter(selected_date: self.day)
-            datePicker.date = day
+        print("picker date: \(datePicker.date) max date: \(datePicker.maximumDate!)")
+        if dayFormatter(selected_date: datePicker.date) != dayFormatter(selected_date: datePicker.maximumDate!){
+            datePicker.date = addToDate(selected_date: datePicker.date, days_to_add: 1)
+            self.dateDisplay.text = dateDisplayFormatter(selected_date: datePicker.date)
+//            datePicker.date = self.day
             
-            self.forward+=1
-            self.backward-=1
+//            self.forward+=1
+//            self.backward-=1
             
             SharplesTable.reloadData()
         }
@@ -144,17 +155,23 @@ class SharplesViewController: UIViewController {
     
     //action performed when prev button is pressed
     @IBAction func prevButtonPressed(_ sender: Any) {
-        if self.backward<10{
-            self.day = subToDate(selected_date: day, days_to_sub: -1)
-            self.dateDisplay.text = dateDisplayFormatter(selected_date: self.day)
-            datePicker.date = day
+        print("picker date: \(datePicker.date) min date: \(datePicker.minimumDate!)")
+        if dayFormatter(selected_date: datePicker.date) != dayFormatter(selected_date: datePicker.minimumDate!){
+            datePicker.date = subToDate(selected_date: datePicker.date, days_to_sub: -1)
+            self.dateDisplay.text = dateDisplayFormatter(selected_date: datePicker.date)
+//            datePicker.date = self.day
             
-            self.backward+=1
-            self.forward-=1
+//            self.backward+=1
+//            self.forward-=1
             
             SharplesTable.reloadData()
         }
     }
+    
+    @IBAction func reserveButtonPressed(_ sender: Any) {
+        UIApplication.shared.open(URL(string: "https://get.cbord.com/swarthmore/full/login.php")! as URL, options: [:], completionHandler: nil)
+    }
+    
     
     func createDatePickerSharples() {
         
@@ -162,7 +179,7 @@ class SharplesViewController: UIViewController {
         //display text configuring
         dateDisplay.textAlignment = .center
         dateDisplay.font = UIFont(name: "System", size: 25)
-        dateDisplay.text = dateDisplayFormatter(selected_date: day)
+        dateDisplay.text = dateDisplayFormatter(selected_date: Date())
         
         //toolbar
         let toolbar = UIToolbar()
@@ -183,8 +200,11 @@ class SharplesViewController: UIViewController {
         
         
         //setting the max and min dates
-        datePicker.maximumDate = addToDate(selected_date: day, days_to_add: 10)
-        datePicker.minimumDate = subToDate(selected_date: day, days_to_sub: -10)
+        
+        datePicker.maximumDate = addToDate(selected_date: Date(), days_to_add: 20)
+        datePicker.minimumDate = Date()
+        print("Maximum date is: \(dayFormatter(selected_date: datePicker.maximumDate!))")
+        print("Minimum date is: \(dayFormatter(selected_date: datePicker.minimumDate!))")
         
     }
     
@@ -196,7 +216,7 @@ class SharplesViewController: UIViewController {
         self.view.endEditing(true)
         
         //call function here that updates the contents of eventsArray to represent the events of the indicated date by the user.
-        self.day = datePicker.date
+//        self.day = datePicker.date
         //this tableView method reloads the data in the TableView
         
         SharplesTable.reloadData()
@@ -209,20 +229,20 @@ extension SharplesViewController: UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         
         //extracting sharples meal information
-        let mealTitle = (self.sharplesData.calData![dayFormatter(selected_date: self.day)]?.events![indexPath.row].title)!.htmlStripped.htmlStripped2()
-        let mealContent = (self.sharplesData.calData![dayFormatter(selected_date: self.day)]?.events![indexPath.row].body)!.htmlStripped.htmlStripped2()
+        let mealTitle = (self.sharplesData.calData![dayFormatter(selected_date: datePicker.date)]?.events![indexPath.row].title)!.htmlStripped.htmlStripped2()
+        let mealContent = (self.sharplesData.calData![dayFormatter(selected_date: datePicker.date)]?.events![indexPath.row].body)!.htmlStripped.htmlStripped2()
         
         //--updating message
         //if the selected date is equal to the current date
-        if dateDisplayFormatter(selected_date: day) == dateDisplayFormatter(selected_date: Date()){
+        if dateDisplayFormatter(selected_date: datePicker.date) == dateDisplayFormatter(selected_date: Date()){
             message = "Hey, want to go to \(mealTitle) at Sharples today? The menu is: \(mealContent)"
         }
         //if the selected date is equal to tomorrow's date
-        else if dateDisplayFormatter(selected_date: day) == dateDisplayFormatter(selected_date: addToDate(selected_date: Date(), days_to_add: 1)){
+        else if dateDisplayFormatter(selected_date: datePicker.date) == dateDisplayFormatter(selected_date: addToDate(selected_date: Date(), days_to_add: 1)){
             message = "Hey, want to go to \(mealTitle) at Sharples tomorrow? The menu is: \(mealContent)"
         }
         else{
-            message = "Hey, want to go to \(mealTitle) at Sharples on \(dateDisplayFormatter(selected_date: day))? The menu is: \(mealContent)"
+            message = "Hey, want to go to \(mealTitle) at Sharples on \(dateDisplayFormatter(selected_date: datePicker.date))? The menu is: \(mealContent)"
         }
         //creating and presenting the alert
         createAlert(title: "Invite Friend", message: "Are you sure you want to invite a friend to this meal? ")
@@ -233,13 +253,13 @@ extension SharplesViewController: UITableViewDelegate{
 extension SharplesViewController: UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         //returning the number of meals contained in the given day. This way, the tableView knows how many cells to create
-        return (self.sharplesData.calData![dayFormatter(selected_date: self.day)]?.events?.count)!
+        return (self.sharplesData.calData![dayFormatter(selected_date: datePicker.date)]?.events?.count)!
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Meal Cell", for: indexPath) as! eventTableViewCell
         
-        let mealTitle = (self.sharplesData.calData![dayFormatter(selected_date: self.day)]?.events![indexPath.row].title)!.htmlStripped.htmlStripped2()
-        let mealContent = (self.sharplesData.calData![dayFormatter(selected_date: self.day)]?.events![indexPath.row].body)!.htmlStripped.htmlStripped2()
+        let mealTitle = (self.sharplesData.calData![dayFormatter(selected_date: datePicker.date)]?.events![indexPath.row].title)!.htmlStripped.htmlStripped2()
+        let mealContent = (self.sharplesData.calData![dayFormatter(selected_date: datePicker.date)]?.events![indexPath.row].body)!.htmlStripped.htmlStripped2()
         
         
         cell.roundImage()
@@ -287,6 +307,44 @@ func dateDisplayFormatter(selected_date: Date)->String{
     return formatter.string(from: selected_date)
 }
 
+func firstDayOfMonth()->Date{
+    //function that return the first day of the current month as a date object
+    
+    let dateFormatter = DateFormatter()
+    let date = Date()
+    dateFormatter.dateFormat = "dd-MM-yyyy"
+    
+    let comp: DateComponents = Calendar.current.dateComponents([.year, .month], from: date)
+    let startOfMonth = Calendar.current.date(from: comp)!
+    return startOfMonth
+    
+}
+
+func lastDayOfMonth()->Date{
+    //fiunction that returns the last day of the current month as a date object
+    
+    let dateFormatter = DateFormatter()
+    let date = Date()
+    dateFormatter.dateFormat = "dd-MM-yyyy"
+    
+    let comp: DateComponents = Calendar.current.dateComponents([.year, .month], from: date)
+    let startOfMonth = Calendar.current.date(from: comp)!
+    
+    var comps2 = DateComponents()
+    comps2.month = 1
+    comps2.day = -1
+    let endOfMonth = Calendar.current.date(byAdding: comps2, to: startOfMonth)
+    return endOfMonth!
+}
+//returns the day component of a given Date object as a string
+func getDay(selected_date:Date)->String{
+    let dateFormatter = DateFormatter()
+    let date = selected_date
+    dateFormatter.dateFormat = "dd"
+    
+    return dateFormatter.string(from: date)
+}
+
 //--MARK This section of code is for incorporating the iMessage UI to allow the user to invite a friend to a given sharples meal
 extension SharplesViewController: MFMessageComposeViewControllerDelegate {
     func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
@@ -306,5 +364,5 @@ extension SharplesViewController: MFMessageComposeViewControllerDelegate {
     }
 }
 
-//The following is code for creating the alert that will confirm wether the user wanta to invite a friend or not
+
 

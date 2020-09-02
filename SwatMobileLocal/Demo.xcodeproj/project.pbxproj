@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1DC27D902453DE8100476ADB /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC27D8F2453DE8100476ADB /* WelcomeViewController.swift */; };
 		C82FE40024536A0700ABDBAA /* SharplesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82FE3FF24536A0700ABDBAA /* SharplesViewController.swift */; };
+		C8645FF224FD87B100BB4AB4 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8645FF124FD87B100BB4AB4 /* MapViewController.swift */; };
 		C8815345243D3DF4000CF2BC /* ThirdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8815344243D3DF4000CF2BC /* ThirdViewController.swift */; };
 		C88C53D7242C323700D2A660 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C88C53D6242C323700D2A660 /* AppDelegate.swift */; };
 		C88C53D9242C323700D2A660 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C88C53D8242C323700D2A660 /* SceneDelegate.swift */; };
@@ -27,8 +28,9 @@
 /* Begin PBXFileReference section */
 		1DC27D8F2453DE8100476ADB /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		C82FE3FF24536A0700ABDBAA /* SharplesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharplesViewController.swift; sourceTree = "<group>"; };
+		C8645FF124FD87B100BB4AB4 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		C8815344243D3DF4000CF2BC /* ThirdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdViewController.swift; sourceTree = "<group>"; };
-		C88C53D3242C323700D2A660 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C88C53D3242C323700D2A660 /* SwatMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwatMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C88C53D6242C323700D2A660 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C88C53D8242C323700D2A660 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C88C53DA242C323700D2A660 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -66,7 +68,7 @@
 		C88C53D4242C323700D2A660 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C88C53D3242C323700D2A660 /* Demo.app */,
+				C88C53D3242C323700D2A660 /* SwatMobile.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,6 +100,7 @@
 				C8DD4DB0243439CF00CB33A3 /* SecondViewController.swift */,
 				C8815344243D3DF4000CF2BC /* ThirdViewController.swift */,
 				C82FE3FF24536A0700ABDBAA /* SharplesViewController.swift */,
+				C8645FF124FD87B100BB4AB4 /* MapViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -127,7 +130,7 @@
 			);
 			name = Demo;
 			productName = Demo;
-			productReference = C88C53D3242C323700D2A660 /* Demo.app */;
+			productReference = C88C53D3242C323700D2A660 /* SwatMobile.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -187,6 +190,7 @@
 				C8DD4DB1243439CF00CB33A3 /* SecondViewController.swift in Sources */,
 				C88C53DB242C323700D2A660 /* ViewController.swift in Sources */,
 				C8EBF6F92457643500E84379 /* sharplesDayData.swift in Sources */,
+				C8645FF224FD87B100BB4AB4 /* MapViewController.swift in Sources */,
 				C8815345243D3DF4000CF2BC /* ThirdViewController.swift in Sources */,
 				C88C53D7242C323700D2A660 /* AppDelegate.swift in Sources */,
 				C8D1BCA6243EDBEB007FA87F /* Event.swift in Sources */,
@@ -339,14 +343,15 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9WUKAR7J66;
 				INFOPLIST_FILE = Demo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ProjectX.Demo;
-				PRODUCT_NAME = Demo;
+				PRODUCT_NAME = SwatMobile;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -357,14 +362,15 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9WUKAR7J66;
 				INFOPLIST_FILE = Demo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ProjectX.Demo;
-				PRODUCT_NAME = Demo;
+				PRODUCT_NAME = SwatMobile;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

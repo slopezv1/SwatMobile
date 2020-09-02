@@ -22,6 +22,7 @@ class SecondViewController: UIViewController {
     //buttons to naviate through monthly event data
     @IBOutlet weak var nextBttn: UIButton!
     @IBOutlet weak var prevBttn: UIButton!
+    @IBOutlet weak var eventActivitySpinner: UIActivityIndicatorView!
     
     //creating a date slide down menu object
     let datePicker = UIDatePicker()
@@ -35,9 +36,13 @@ class SecondViewController: UIViewController {
     //boolean flag to indicate when json parser is finished
     var doneParsing:Bool = false
     
+    //default date that is displayed when the view is initially displayed
+    var defaultDate:Date = Date()
+    
     //function that parses a GET http json request and loads the parsed data into struct Event objects
     func parseEventJSON(){
         let init_url = createURLmonth()
+        print("URL containing event data en JSON format: \(init_url)")
         
         guard let url = URL(string: init_url) else { return }
         
@@ -52,7 +57,7 @@ class SecondViewController: UIViewController {
                 do {
                     let dataArr = try decoder.decode([Event].self, from: data!)
                     self.eventsArray = dataArr
-                    print("In JSON Parser for calendar event data:")
+                    print("In JSON Parser for calendar event data: \(dataArr)")
                     self.doneParsing = true
                 }
                 catch{
@@ -74,13 +79,6 @@ class SecondViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //loading the json data into the array containing the event objects
-        parseEventJSON()
-        
-        while !doneParsing{
-            //do not leave this block untill the json parsing is finished and the bool flag is flipped
-        }
 
         //self is the SecondViewController, and it is being designated as the delegate of the UITableView object. This means that it will handle the tasks of the UITableView object. More details on the methods that come with being the UITableView delegate can be found in Apple's developer documentation.
         dayEvents.delegate = self
@@ -88,11 +86,6 @@ class SecondViewController: UIViewController {
         //self is the SecondViewController, and it is being desingated as the source for the data that will populate the cells of our tableViewObject as well as managing that data and mutating it when necessary. More details on the methods that come with being the UITableView dataSource can be found in Apple's developer documentation.
         dayEvents.dataSource = self
         
-        //setting the current day events as the default displayed events
-        initEventDisplay()
-        
-        // Do any additional setup after loading the view.
-        createDatePicker()
         
         //customizing the buttons programatically to have round corners
         nextBttn.layer.cornerRadius = 15
@@ -106,6 +99,26 @@ class SecondViewController: UIViewController {
 //        navigationItem.titleView?.layer.cornerRadius = 15
 //        navigationItem.titleView?.layer.masksToBounds = true
 
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+        eventActivitySpinner.startAnimating()
+        //loading the json data into the array containing the event objects
+        parseEventJSON()
+        while !doneParsing{
+            //do not leave this block untill the json parsing is finished and the bool flag is flipped
+        }
+        //creating the date picker
+        createDatePicker()
+        //setting the current day events as the default displayed events
+        //setting the defaultDate variable as the currently selected date
+        defaultDate = datePicker.date
+        initEventDisplay(date:defaultDate)
+        //reloading tableview data once parsing is done
+        dayEvents.reloadData()
+        eventActivitySpinner.stopAnimating()
+        
     }
     
     //button that goes to the next day when pressed
@@ -251,18 +264,16 @@ class SecondViewController: UIViewController {
     }
     
     //function that sets up the inital event display to show the current day events as default
-    func initEventDisplay(){
-        
-        let currentDay = Date()
+    func initEventDisplay(date:Date){
         
         //formatting time
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
         
-        dateTxt.text = formatter.string(from: currentDay)
+        dateTxt.text = formatter.string(from: date)
         
-        dayEventsArray = getDayEvents(date: currentDay, allEvents: eventsArray)
+        dayEventsArray = getDayEvents(date: date, allEvents: eventsArray)
         
     }
     
